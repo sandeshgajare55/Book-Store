@@ -7,10 +7,13 @@ from .forms import BookForm, RequestBookForm
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db import transaction
 
+@transaction.atomic
 def index(request):
     return render(request, "index.html")
 
+@transaction.atomic
 def Usersignup(request):
     if request.user.is_authenticated:
         return redirect('/')
@@ -41,6 +44,7 @@ def Usersignup(request):
     return render(request, "signup.html")
 
 
+@transaction.atomic
 def User_login(request):
     if request.user.is_authenticated:
         return redirect('/')
@@ -59,6 +63,7 @@ def User_login(request):
                 messages.error(request, "Please provide a valid username and password")
     return render(request, "user_login.html")
 
+@transaction.atomic
 def Logout(request):
     logout(request)
     thank = True
@@ -70,6 +75,7 @@ def Admin(request):
     total_books = books.count()
     return render (request, "for_admin.html", {'books':books, 'total_books':total_books})
 
+@transaction.atomic
 def Delete_Books(request, myid):
     books = Book.objects.get(id=myid)
     if request.method == "POST":
@@ -83,6 +89,7 @@ def Users(request):
     total_books = books.count()
     return render (request, "for_user.html", {'books':books, 'total_books':total_books})
 
+@transaction.atomic
 def Add_Books(request):
     if request.method=="POST":
         form = BookForm(request.POST)
@@ -93,6 +100,8 @@ def Add_Books(request):
         form=BookForm()
     return render(request, "add_books.html", {'form':form})
 
+
+@transaction.atomic
 def request_books(request):
     if request.method=="POST":
         user = request.user
@@ -104,11 +113,15 @@ def request_books(request):
         return render(request, "request_books.html", {'thank':thank})
     return render(request, "request_books.html")
 
+
+@transaction.atomic
 def see_requested_books(request):
     requested_book = Request_Book.objects.all()
     requested_books_count = requested_book.count()
     return render(request, "see_requested_books.html", {'requested_book':requested_book, 'requested_books_count':requested_books_count})
 
+
+@transaction.atomic
 def delete_requested_books(request, myid):
     delete_book = Request_Book.objects.get(id=myid)
     if request.method == "POST":
@@ -116,20 +129,25 @@ def delete_requested_books(request, myid):
         return redirect('/see_requested_books')
     return render(request, "delete_requested_books.html", {'delete_book':delete_book})
 
+
+@transaction.atomic
 def customers_list(request):
     customers = Order.objects.all()
     customer_count = customers.count()
     return render(request, "customers_list.html", {'customers':customers, 'customer_count':customer_count})
 
+
+@transaction.atomic
 def orders_list(request, myid):
     customer = Order.objects.filter(id=myid)
     return render(request, "orders_list.html", {'customer':customer})
 
+@transaction.atomic
 def data_view(request, myid):
     orders = Order.objects.get(id=myid)
     return JsonResponse({'data':orders.items_json})
 
-
+@transaction.atomic
 def checkout(request):
     if request.method=="POST":
         user = request.user
