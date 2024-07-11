@@ -75,6 +75,7 @@ def Admin(request):
     total_books = books.count()
     return render (request, "for_admin.html", {'books':books, 'total_books':total_books})
 
+
 @transaction.atomic
 def Delete_Books(request, myid):
     books = Book.objects.get(id=myid)
