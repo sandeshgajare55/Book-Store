@@ -29,3 +29,19 @@ def admin_or_user(view):
             
         return wrapper_function
             
+
+from django.http import HttpResponse
+
+def wrapper_function(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        # Perform some processing before the view function is called
+        print("Decorator: Before calling the view function")
+        response = view_func(request, *args, **kwargs)
+        # Perform some processing after the view function is called
+        print("Decorator: After calling the view function")
+        if response is None:
+            return HttpResponse("Error: The view returned None", status=500)
+
+        return response
+
+    return _wrapped_view

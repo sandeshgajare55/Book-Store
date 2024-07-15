@@ -8,6 +8,7 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db import transaction
+from .decorators import wrapper_function
 
 @transaction.atomic
 def index(request):
@@ -69,11 +70,12 @@ def Logout(request):
     thank = True
     return render(request, "index.html", {'thank':thank})
 
-@admin_or_user
+@wrapper_function
 def Admin(request):
     books = Book.objects.all()
     total_books = books.count()
     return render (request, "for_admin.html", {'books':books, 'total_books':total_books})
+
 
 
 @transaction.atomic
